@@ -1,0 +1,44 @@
+service: culqi-challenge
+frameworkVersion: "3"
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: DESA
+  region: us-east-2
+#  environment:
+#    variable1: value1
+
+package:
+  individually: true
+  patterns:
+    - '!.esbuild/**'
+    - '!.vscode'
+    - '!.gitignore'
+    - '!npm'
+    - '!package.json'
+    - '!package-lock.json'
+
+functions:
+  tokens:
+    handler: src/functions/payments/handler.generateToken
+    events:
+      - http:
+          path: /V2/tokens
+          method: POST
+  cards:
+    handler: src/functions/payments/handler.retrieveToken
+    events:
+      - http:
+          path: /V2/card
+          method: post
+
+custom:
+  esbuild:
+    bundle: true
+    minify: true
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+  - serverless-dotenv-plugin
+
